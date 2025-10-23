@@ -2,15 +2,17 @@
 
 ## DocVQA Benchmark Performance
 
-This document tracks evaluation results on the SP-DocVQA dataset.
+This document tracks evaluation results on the SP-DocVQA dataset as the system evolves.
 
 **Dataset:** lmms-lab/DocVQA (SP-DocVQA validation split)  
+**Current Architecture:** Single-agent with hybrid OCR + Vision  
 **Model:** Gemini 2.0 Flash (with vision capabilities)  
-**Approach:** Hybrid Document AI OCR + Gemini Vision
 
 ---
 
-## Latest Results (100 samples)
+## Current Results: Single-Agent System (100 samples)
+
+**Note:** This is the baseline performance of the single-agent architecture. Multi-agent improvements are in development.
 
 ### Performance Metrics
 
@@ -176,9 +178,9 @@ Key findings during development:
 
 ---
 
-## System Characteristics
+## Current System Characteristics
 
-### Current Performance Profile:
+### Single-Agent Performance Profile:
 
 | Aspect | Status | Notes |
 |--------|--------|-------|
@@ -207,23 +209,29 @@ Key findings during development:
 
 ---
 
-## Potential Improvements
+## Active Development: Multi-Agent Architecture
 
-### Ideas for Future Development:
+### Current Limitations (Single-Agent)
 
-| Improvement | Estimated Impact | Effort |
-|-------------|-----------------|--------|
-| Better visual prompts | +1-2% | Low |
-| Few-shot examples | +1% | Medium |
-| Ensemble methods | +1-2% | High |
-| Fine-tuning | +2-3% | Very High |
+| Area | Current ANLS | Target | Approach |
+|------|-------------|--------|----------|
+| Image/Photo questions | 65% | 80-85% | Vision Specialist Agent |
+| Answer validation | N/A | +1-2% | Validator Agent |
+| Question routing | Basic | Advanced | Orchestrator Agent |
 
-### Development Roadmap Ideas:
+### Planned Improvements
 
-1. Improve Image/Photo question prompts (currently 65%)
-2. Add few-shot examples for challenging question types
-3. Implement answer validation/verification
-4. Explore domain-specific adaptations
+| Phase | Improvement | Estimated Impact | Status |
+|-------|-------------|-----------------|--------|
+| Phase 1 | Vision Specialist Agent | +10-15% on images | 🚧 Planning |
+| Phase 1 | Answer Validator Agent | +1-2% overall | 🚧 Planning |
+| Phase 2 | Orchestrator Agent | +1-2% overall | 🚧 Planning |
+| Phase 3 | Ensemble methods | +0.5-1% | 📋 Future |
+| Phase 3 | Few-shot examples | +1% | 📋 Future |
+
+**Target:** 93-95% ANLS with multi-agent system
+
+See [MULTI_AGENT_ROADMAP.md](../MULTI_AGENT_ROADMAP.md) for complete development plan.
 
 ---
 

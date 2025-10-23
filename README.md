@@ -12,14 +12,23 @@ This project implements a multi-modal approach to document question answering us
 - **Gemini 2.0 Flash Vision** for visual document understanding
 - **Selective strategy** that intelligently chooses when to use OCR vs. vision-only
 
+**Current Status:** Single-agent system achieving 90.81% ANLS on DocVQA benchmark. Actively developing multi-agent architecture for further improvements.
+
 ## Features
 
+### Current Implementation
 - Hybrid OCR + Vision pipeline
 - Selective OCR strategy based on question type
 - Zero-shot learning (no training required)
 - Rate-limited API calls for reliability
 - Benchmark evaluation on SP-DocVQA dataset
 - ADK (Agent Development Kit) integration
+
+### In Development
+- Multi-agent specialist architecture
+- Enhanced vision processing for image/photo questions
+- Agent orchestration and routing
+- Ensemble methods for improved accuracy
 
 ## Quick Start
 
@@ -242,6 +251,27 @@ Scaling:
 - 1,000 documents: ~$1.60
 - 10,000 documents: ~$16.00
 
+## Roadmap
+
+### Current Milestone: Single-Agent System ✅
+- 90.81% ANLS on DocVQA benchmark
+- Hybrid OCR + Vision approach
+- Production-ready core functionality
+
+### Next Milestone: Multi-Agent Architecture 🚧
+- Vision Specialist Agent (target: +5-10% on image/photo questions)
+- Answer Validator Agent (target: +1-2% overall)
+- Agent Orchestrator for intelligent routing
+- See [MULTI_AGENT_ROADMAP.md](MULTI_AGENT_ROADMAP.md) for details
+
+### Future Improvements
+- Fine-tuning for specific document types
+- Few-shot learning examples
+- Ensemble methods
+- Domain-specific adaptations
+
+---
+
 ## Troubleshooting
 
 ### Common Issues
@@ -303,7 +333,7 @@ If you use this code, please cite:
 @software{document_ai_agent,
   title = {Document AI Agent: Hybrid OCR + Vision System},
   author = {Your Name},
-  year = {2024},
+  year = {2025},
   url = {https://github.com/YOUR_USERNAME/document_ai_agent}
 }
 ```
