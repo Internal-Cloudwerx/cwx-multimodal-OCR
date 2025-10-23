@@ -1,0 +1,18 @@
+# ADK Framework
+google-adk>=0.3.0
+
+# Google Cloud Services
+google-cloud-documentai==2.30.0
+google-cloud-aiplatform>=1.63.0
+
+# Document Processing
+Pillow==10.4.0
+
+# Utilities
+python-dotenv==1.0.1
+
+# Evaluation Dependencies
+datasets>=2.14.0
+python-Levenshtein>=0.21.0
+tqdm>=4.65.0
+pandas>=2.0.0
