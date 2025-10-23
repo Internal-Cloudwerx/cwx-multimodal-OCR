@@ -8,6 +8,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from evaluation.docvqa_evaluator import DocVQAEvaluator
+from evaluation.docvqa_evaluator_v2 import DocVQAEvaluatorV2
 import argparse
 import logging
 
@@ -20,6 +21,22 @@ logger = logging.getLogger(__name__)
 def main():
     parser = argparse.ArgumentParser(
         description="Evaluate agent on SP-DocVQA benchmark"
+    )
+    parser.add_argument(
+        '--use-agent-api',
+        action='store_true',
+        help='Use REST API for agent communication (requires: adk web --port 4200)'
+    )
+    parser.add_argument(
+        '--agent-url',
+        type=str,
+        default='http://localhost:4200',
+        help='Agent REST API URL (default: http://localhost:4200)'
+    )
+    parser.add_argument(
+        '--no-fallback',
+        action='store_true',
+        help='Disable fallback to direct calls if agent API unavailable'
     )
     parser.add_argument(
         '--split',
@@ -60,24 +77,40 @@ def main():
     
     args = parser.parse_args()
     
-    # Load your agent
-    logger.info("Loading agent...")
-    try:
-        from agent import root_agent
-        agent = root_agent
-        logger.info(f"✓ Loaded agent: {agent.name}")
-    except Exception as e:
-        logger.error(f"Failed to load agent: {e}")
-        logger.error("Make sure your agent is in agent.py")
-        sys.exit(1)
-    
-    # Initialize evaluator
-    logger.info("Initializing evaluator...")
-    evaluator = DocVQAEvaluator(
-        agent=agent,
-        dataset_split=args.split,
-        cache_dir=args.cache_dir
-    )
+    # Choose evaluator based on mode
+    if args.use_agent_api:
+        logger.info("Using REST API mode (v2 evaluator)")
+        logger.info(f"Agent URL: {args.agent_url}")
+        logger.info(f"Fallback enabled: {not args.no_fallback}")
+        logger.info("\n⚠️  Make sure agent server is running: adk web --port 4200\n")
+        
+        # Initialize V2 evaluator (REST API)
+        evaluator = DocVQAEvaluatorV2(
+            agent_url=args.agent_url,
+            enable_fallback=not args.no_fallback,
+            dataset_split=args.split,
+            cache_dir=args.cache_dir
+        )
+    else:
+        logger.info("Using fallback mode (v1 evaluator - direct tool calls)")
+        
+        # Load your agent
+        logger.info("Loading agent...")
+        try:
+            from agent import root_agent
+            agent = root_agent
+            logger.info(f"✓ Loaded agent: {agent.name}")
+        except Exception as e:
+            logger.error(f"Failed to load agent: {e}")
+            logger.error("Make sure your agent is in agent.py")
+            sys.exit(1)
+        
+        # Initialize V1 evaluator
+        evaluator = DocVQAEvaluator(
+            agent=agent,
+            dataset_split=args.split,
+            cache_dir=args.cache_dir
+        )
     
     # Run evaluation
     logger.info("Starting evaluation...")
