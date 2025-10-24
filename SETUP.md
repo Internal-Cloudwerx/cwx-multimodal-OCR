@@ -48,26 +48,6 @@ gcloud auth application-default login
 gcloud config set project YOUR_PROJECT_ID
 ```
 
-**Option B: Using GitHub CLI (If you have it)**
-```bash
-# Install GitHub CLI
-brew install gh  # macOS
-# or: https://cli.github.com/
-
-# Authenticate with your Google account
-gh auth login
-gh auth setup-git
-```
-
-**Option C: Manual Service Account (Advanced)**
-If you prefer manual key management:
-1. Go to [IAM & Admin > Service Accounts](https://console.cloud.google.com/iam-admin/serviceaccounts)
-2. Create a service account
-3. Grant roles: `Document AI API User`, `Vertex AI User`
-4. Create and download JSON key
-5. Save it to `./credentials/your-key-file.json`
-6. Set `GOOGLE_APPLICATION_CREDENTIALS=./credentials/your-key-file.json`
-
 ## Step 3: Configure Environment
 
 ### 3.1 Create .env File
@@ -88,8 +68,6 @@ GCP_PROJECT_ID=your-actual-project-id
 GCP_LOCATION=us
 DOCUMENT_AI_PROCESSOR_ID=your-actual-processor-id
 
-# Only needed if using manual service account keys (Option C above)
-# GOOGLE_APPLICATION_CREDENTIALS=./credentials/your-key-file.json
 ```
 
 ## Step 4: Verify Setup
