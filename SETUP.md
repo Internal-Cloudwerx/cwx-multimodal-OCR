@@ -5,7 +5,7 @@
 - Python 3.8+
 - Google Cloud Platform account
 - Google Document AI processor set up
-- Service account with appropriate permissions
+- Authenticated with Google Cloud (no manual key files needed!)
 
 ## Step 1: Install Dependencies
 
@@ -31,14 +31,42 @@ gcloud services enable aiplatform.googleapis.com
 2. Create a new processor (type: "Document OCR")
 3. Note the Processor ID
 
-### 2.4 Create Service Account
+### 2.4 Authenticate with Google Cloud (Easy Method)
+
+**Option A: Using gcloud CLI (Recommended)**
+```bash
+# Install gcloud CLI if you haven't already
+# https://cloud.google.com/sdk/docs/install
+
+# Authenticate with your Google account
+gcloud auth login
+
+# Set application default credentials
+gcloud auth application-default login
+
+# Set your project
+gcloud config set project YOUR_PROJECT_ID
+```
+
+**Option B: Using GitHub CLI (If you have it)**
+```bash
+# Install GitHub CLI
+brew install gh  # macOS
+# or: https://cli.github.com/
+
+# Authenticate with your Google account
+gh auth login
+gh auth setup-git
+```
+
+**Option C: Manual Service Account (Advanced)**
+If you prefer manual key management:
 1. Go to [IAM & Admin > Service Accounts](https://console.cloud.google.com/iam-admin/serviceaccounts)
 2. Create a service account
-3. Grant roles:
-   - `Document AI API User`
-   - `Vertex AI User`
+3. Grant roles: `Document AI API User`, `Vertex AI User`
 4. Create and download JSON key
 5. Save it to `./credentials/your-key-file.json`
+6. Set `GOOGLE_APPLICATION_CREDENTIALS=./credentials/your-key-file.json`
 
 ## Step 3: Configure Environment
 
@@ -60,7 +88,8 @@ GCP_PROJECT_ID=your-actual-project-id
 GCP_LOCATION=us
 DOCUMENT_AI_PROCESSOR_ID=your-actual-processor-id
 
-GOOGLE_APPLICATION_CREDENTIALS=./credentials/your-key-file.json
+# Only needed if using manual service account keys (Option C above)
+# GOOGLE_APPLICATION_CREDENTIALS=./credentials/your-key-file.json
 ```
 
 ## Step 4: Verify Setup

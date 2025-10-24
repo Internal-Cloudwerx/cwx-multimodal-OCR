@@ -1,4 +1,4 @@
-# cwx-multimodal-OCR
+# (WIP) cwx-multimodal-OCR
 
 A multi-modal, multi-agentic approach to analyze documents using Gemini and DocAI OCR for one-shot benchmark/enterprise-ready uses
 
@@ -49,7 +49,10 @@ MODEL=gemini-2.5-flash
 GCP_PROJECT_ID=your-project-id
 GCP_LOCATION=us
 DOCUMENT_AI_PROCESSOR_ID=your-processor-id
-GOOGLE_APPLICATION_CREDENTIALS=./credentials/your-key.json
+
+# Authentication: Use gcloud CLI (recommended) or GitHub CLI
+# No manual key files needed!
+# gcloud auth application-default login
 ```
 
 ### Usage
@@ -259,8 +262,9 @@ Results are reproducible using the benchmark evaluation scripts in `evaluation/`
 ### Common Issues
 
 **"403 Forbidden" Error**
-- Verify service account has required permissions
+- Verify you're authenticated: `gcloud auth list`
 - Check APIs are enabled in GCP console
+- Ensure your account has required permissions
 
 **"Processor not found" Error**
 - Double-check `DOCUMENT_AI_PROCESSOR_ID` in .env
