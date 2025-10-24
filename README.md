@@ -303,7 +303,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [SP-DocVQA Dataset](https://huggingface.co/datasets/lmms-lab/DocVQA)
 - [ADK Documentation](https://github.com/google/adk)
 
-## Acknowledgments:
+## Acknowledgments
 
 This project uses:
 - Google Document AI for OCR and document understanding
