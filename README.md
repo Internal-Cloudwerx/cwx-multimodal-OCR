@@ -2,6 +2,11 @@
 
 A multi-modal, multi-agentic approach to analyze documents using Gemini and DocAI OCR for one-shot benchmark/enterprise-ready uses
 
+Next steps:
+- For the weak points of this pipeline fill in with agents
+- For example, "Image Specialist Agent", "Router/Orchestrator Agent", etc.
+- Add ADK wrappers for web support 
+
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
