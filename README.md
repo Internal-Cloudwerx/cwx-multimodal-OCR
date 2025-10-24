@@ -5,10 +5,6 @@ A multi-modal, multi-agentic approach to analyze documents using Gemini and DocA
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## About
-
-A multi-modal, multi-agentic approach to analyze documents using Gemini and DocAI OCR for one-shot benchmark/enterprise-ready uses.
-
 This project implements a hybrid approach combining:
 - **Google Document AI** for OCR and structured text extraction
 - **Gemini 2.5 Flash Vision** for visual document understanding
