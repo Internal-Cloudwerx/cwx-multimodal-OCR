@@ -44,9 +44,7 @@ GCP_PROJECT_ID=your-project-id
 GCP_LOCATION=us
 DOCUMENT_AI_PROCESSOR_ID=your-processor-id
 
-# Authentication: Use gcloud CLI (recommended) or GitHub CLI
-# No manual key files needed!
-# gcloud auth application-default login
+# Authentication: Use gcloud CLI
 ```
 
 ### Usage
@@ -305,7 +303,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [SP-DocVQA Dataset](https://huggingface.co/datasets/lmms-lab/DocVQA)
 - [ADK Documentation](https://github.com/google/adk)
 
-## Acknowledgments
+## Acknowledgments:
 
 This project uses:
 - Google Document AI for OCR and document understanding
