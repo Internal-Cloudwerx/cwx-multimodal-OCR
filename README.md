@@ -6,11 +6,9 @@ A multi-modal, multi-agentic approach to analyze documents using Gemini and DocA
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 This project implements a hybrid approach combining:
-- **Google Document AI** for OCR and structured text extraction
-- **Gemini 2.5 Flash Vision** for visual document understanding
-- **Selective strategy** that intelligently chooses when to use OCR vs. vision-only
-
-**Current Status:** Production-ready single-agent system with hybrid OCR + Vision approach.
+- Google Document AI for OCR and structured text extraction
+- Gemini 2.5 Flash Vision for visual document understanding
+- Selective strategy that intelligently chooses when to use OCR vs. vision-only
 
 ## Features
 
