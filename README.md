@@ -1,13 +1,15 @@
-# Document AI Agent
+# cwx-multimodal-OCR
 
-Hybrid document AI system combining Google Document AI OCR with Gemini Vision for intelligent document question answering on the DocVQA benchmark.
+A multi-modal, multi-agentic approach to analyze documents using Gemini and DocAI OCR for one-shot benchmark/enterprise-ready uses
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Overview
+## About
 
-This project implements a multi-modal approach to document question answering using:
+A multi-modal, multi-agentic approach to analyze documents using Gemini and DocAI OCR for one-shot benchmark/enterprise-ready uses.
+
+This project implements a hybrid approach combining:
 - **Google Document AI** for OCR and structured text extraction
 - **Gemini 2.5 Flash Vision** for visual document understanding
 - **Selective strategy** that intelligently chooses when to use OCR vs. vision-only
@@ -104,7 +106,7 @@ Document + Question
 ## Project Structure
 
 ```
-document_ai_agent/
+cwx-multimodal-OCR/
 ├── agent.py                     # ADK agent definition
 ├── tools/
 │   └── document_ocr.py         # Document AI integration
