@@ -7,6 +7,9 @@ from google.cloud import documentai_v1 as documentai
 from google.api_core.client_options import ClientOptions
 import os
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Global state for tool initialization
 _ocr_processor = None
@@ -19,10 +22,7 @@ def initialize_ocr_processor():
         location = os.getenv('GCP_LOCATION', 'us')
         processor_id = os.getenv('DOCUMENT_AI_PROCESSOR_ID')
         
-        print(f"[DEBUG] Initializing Document AI processor:")
-        print(f"[DEBUG]   Project ID: {project_id}")
-        print(f"[DEBUG]   Location: {location}")
-        print(f"[DEBUG]   Processor ID: {processor_id}")
+        logger.info(f"Initializing Document AI processor in {location} (Project: {project_id})")
         
         opts = ClientOptions(
             api_endpoint=f"{location}-documentai.googleapis.com",
@@ -34,13 +34,12 @@ def initialize_ocr_processor():
                 client_options=opts,
                 transport='rest'
             )
-            print(f"[DEBUG] Using REST transport for Document AI")
+            logger.debug("Using REST transport for Document AI")
         except Exception as e:
-            print(f"[DEBUG] REST transport failed, falling back to gRPC: {e}")
+            logger.debug(f"REST transport failed, falling back to gRPC: {e}")
             client = documentai.DocumentProcessorServiceClient(client_options=opts)
         
         processor_name = client.processor_path(project_id, location, processor_id)
-        print(f"[DEBUG]   Processor Name: {processor_name}")
         
         _ocr_processor = {
             'client': client,
@@ -69,7 +68,7 @@ def process_document_with_ocr(document_path: str) -> str:
         
         # Convert relative paths to absolute paths based on project root
         if not os.path.isabs(document_path):
-            # Assume relative to /Users/joshnaim/document_ai_agent/
+            # Assume relative to project root
             project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             document_path = os.path.join(project_root, document_path)
         
@@ -104,13 +103,12 @@ def process_document_with_ocr(document_path: str) -> str:
             raw_document=raw_document
         )
         
-        print(f"[DEBUG] Sending document to Document AI processor: {processor['processor_name']}")
-        print(f"[DEBUG] Document size: {len(document_content)} bytes, MIME type: {mime_type}")
+        logger.debug(f"Processing document: {len(document_content)} bytes ({mime_type})")
         
         result = processor['client'].process_document(request=request)
         document = result.document
         
-        print(f"[DEBUG] Document AI processing complete. Extracted {len(document.text)} characters from {len(document.pages)} pages")
+        logger.info(f"Extracted {len(document.text)} characters from {len(document.pages)} page(s)")
         
         # Extract structured data
         extracted = {
@@ -154,9 +152,7 @@ def process_document_with_ocr(document_path: str) -> str:
         return json.dumps(extracted, indent=2)
         
     except Exception as e:
-        print(f"[ERROR] Document AI processing failed: {type(e).__name__}: {str(e)}")
-        import traceback
-        print(f"[ERROR] Traceback: {traceback.format_exc()}")
+        logger.error(f"Document AI processing failed: {type(e).__name__}: {str(e)}", exc_info=True)
         error_result = {
             'status': 'error',
             'error_message': f"Failed to process document: {type(e).__name__}: {str(e)}"

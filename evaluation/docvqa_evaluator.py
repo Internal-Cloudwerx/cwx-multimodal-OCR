@@ -50,13 +50,16 @@ class DocVQAEvaluator:
         
         # Rate limiting to avoid 429 errors
         self.last_request_time = None
-        self.min_request_interval = 2.0  # 2 seconds between requests = max 30 RPM
+        self.min_request_interval = 0.5  # 0.5 seconds = 120 RPM (well under 40M quota!)
         
         # Initialize Vertex AI for fallback
-        project_id = os.getenv('GCP_PROJECT_ID', 'docaiagent-475904')
+        project_id = os.getenv('GCP_PROJECT_ID')
         location = os.getenv('GOOGLE_CLOUD_LOCATION', 'us-central1')
-        vertexai.init(project=project_id, location=location)
-        self.gemini_model = GenerativeModel("gemini-2.0-flash-exp")
+        if project_id:
+            vertexai.init(project=project_id, location=location)
+            self.gemini_model = GenerativeModel("gemini-2.5-flash")
+        else:
+            raise ValueError("GCP_PROJECT_ID environment variable is required")
         
         # Load dataset
         logger.info("Initializing DocVQA evaluator...")

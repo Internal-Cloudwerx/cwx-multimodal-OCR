@@ -258,7 +258,7 @@ class AgentClientManager:
         import os
         
         # Initialize Gemini
-        model = GenerativeModel(os.getenv('MODEL', 'gemini-2.0-flash-exp'))
+        model = GenerativeModel(os.getenv('MODEL', 'gemini-2.5-flash'))
         
         # Get OCR if context not provided
         ocr_text = context

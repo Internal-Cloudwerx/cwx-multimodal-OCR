@@ -14,7 +14,7 @@ load_dotenv()
 
 root_agent = Agent(
     name="document_processing_agent",
-    model=os.getenv('MODEL', 'gemini-2.0-flash'),
+    model=os.getenv('MODEL', 'gemini-2.5-flash'),
     description=(
         "An AI agent specialized in analyzing documents including PDFs, receipts, "
         "invoices, forms, and images. Can extract text, tables, and structured data "

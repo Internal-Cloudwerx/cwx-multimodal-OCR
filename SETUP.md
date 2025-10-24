@@ -54,7 +54,7 @@ cp .env.example .env
 GOOGLE_GENAI_USE_VERTEXAI=1
 GOOGLE_CLOUD_PROJECT=your-actual-project-id
 GOOGLE_CLOUD_LOCATION=us-central1
-MODEL=gemini-2.0-flash
+MODEL=gemini-2.5-flash
 
 GCP_PROJECT_ID=your-actual-project-id
 GCP_LOCATION=us
@@ -107,7 +107,7 @@ adk web --port 4200
 
 ### "429 Rate Limit" Error
 - Request quota increase: https://console.cloud.google.com/iam-admin/quotas
-- Or add rate limiting (see EVALUATION_SUMMARY.md)
+- Or add rate limiting in evaluation code (see evaluation/README.md)
 
 ### Import Errors
 - Ensure all dependencies are installed: `pip install -r requirements.txt`
@@ -116,7 +116,7 @@ adk web --port 4200
 ## Cost Estimates
 
 - Document AI OCR: ~$0.0015 per page
-- Gemini 2.0 Flash: ~$0.0001 per request
+- Gemini 2.5 Flash: ~$0.0001 per request
 - **Total: ~$0.0016 per document**
 
 For 100 documents: ~$0.16
@@ -125,6 +125,6 @@ For 1000 documents: ~$1.60
 ## Need Help?
 
 - Check [evaluation/README.md](evaluation/README.md) for benchmark details
-- See [EVALUATION_SUMMARY.md](EVALUATION_SUMMARY.md) for performance analysis
+- Review the main [README.md](README.md) for project overview
 - Open an issue on GitHub
 

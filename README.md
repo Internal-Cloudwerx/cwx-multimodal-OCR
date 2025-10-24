@@ -9,10 +9,10 @@ Hybrid document AI system combining Google Document AI OCR with Gemini Vision fo
 
 This project implements a multi-modal approach to document question answering using:
 - **Google Document AI** for OCR and structured text extraction
-- **Gemini 2.0 Flash Vision** for visual document understanding
+- **Gemini 2.5 Flash Vision** for visual document understanding
 - **Selective strategy** that intelligently chooses when to use OCR vs. vision-only
 
-**Current Status:** Single-agent system achieving 90.81% ANLS on DocVQA benchmark. Actively developing multi-agent architecture for further improvements.
+**Current Status:** Production-ready single-agent system with hybrid OCR + Vision approach.
 
 ## Features
 
@@ -24,11 +24,6 @@ This project implements a multi-modal approach to document question answering us
 - Benchmark evaluation on SP-DocVQA dataset
 - ADK (Agent Development Kit) integration
 
-### In Development
-- Multi-agent specialist architecture
-- Enhanced vision processing for image/photo questions
-- Agent orchestration and routing
-- Ensemble methods for improved accuracy
 
 ## Quick Start
 
@@ -42,20 +37,12 @@ pip install -r requirements.txt
 
 ### Configuration
 
-```bash
-# Copy environment template
-cp .env.example .env
-
-# Edit .env with your credentials
-# See SETUP.md for detailed instructions
-```
-
-Required environment variables:
+Create a `.env` file in the project root with your credentials:
 ```bash
 GOOGLE_GENAI_USE_VERTEXAI=1
 GOOGLE_CLOUD_PROJECT=your-project-id
 GOOGLE_CLOUD_LOCATION=us-central1
-MODEL=gemini-2.0-flash
+MODEL=gemini-2.5-flash
 
 GCP_PROJECT_ID=your-project-id
 GCP_LOCATION=us
@@ -118,20 +105,23 @@ Document + Question
 
 ```
 document_ai_agent/
-├── agent.py                    # ADK agent definition
+├── agent.py                     # ADK agent definition
 ├── tools/
-│   └── document_ocr.py        # Document AI integration
+│   └── document_ocr.py         # Document AI integration
 ├── evaluation/
-│   ├── docvqa_evaluator.py    # Benchmark evaluator
-│   ├── hf_docvqa_loader.py    # Dataset loader
-│   ├── anls_metric.py         # ANLS scoring
-│   └── README.md              # Evaluation guide
+│   ├── docvqa_evaluator.py     # Benchmark evaluator
+│   ├── hf_docvqa_loader.py     # Dataset loader
+│   ├── anls_metric.py          # ANLS scoring
+│   └── README.md               # Evaluation guide
 ├── scripts/
 │   ├── run_docvqa_benchmark.py # Run evaluations
-│   └── test_docvqa_quick.py   # Quick tests
-├── SETUP.md                    # Detailed setup guide
-├── EVALUATION_SUMMARY.md       # Benchmark results
-└── requirements.txt            # Dependencies
+│   └── test_docvqa_quick.py    # Quick tests
+├── data/
+│   └── sample/                 # Sample documents
+├── credentials/                 # GCP credentials (gitignored)
+├── SETUP.md                     # Detailed setup guide
+├── README.md                    # This file
+└── requirements.txt             # Dependencies
 ```
 
 ## Benchmarking
@@ -171,7 +161,7 @@ The evaluation uses the **ANLS (Average Normalized Levenshtein Similarity)** met
 
 ```bash
 # In .env file
-MODEL=gemini-2.0-flash  # Recommended for vision tasks
+MODEL=gemini-2.5-flash  # Recommended for vision tasks
 # or
 MODEL=gemini-1.5-pro    # Alternative
 ```
@@ -220,7 +210,7 @@ from tools.your_module import your_tool
 
 root_agent = Agent(
     name="document_processing_agent",
-    model=os.getenv('MODEL', 'gemini-2.0-flash'),
+    model=os.getenv('MODEL', 'gemini-2.5-flash'),
     tools=[
         process_document_with_ocr,
         search_document,
@@ -243,7 +233,7 @@ python3 scripts/run_docvqa_benchmark.py --num-samples 10
 
 Approximate costs per document:
 - Document AI OCR: ~$0.0015
-- Gemini 2.0 Flash: ~$0.0001
+- Gemini 2.5 Flash: ~$0.0001
 - **Total: ~$0.0016 per document**
 
 Scaling:
@@ -251,24 +241,14 @@ Scaling:
 - 1,000 documents: ~$1.60
 - 10,000 documents: ~$16.00
 
-## Roadmap
+## Performance
 
-### Current Milestone: Single-Agent System ✅
-- 90.81% ANLS on DocVQA benchmark
-- Hybrid OCR + Vision approach
-- Production-ready core functionality
+The system achieves competitive performance on document question answering benchmarks using a hybrid approach:
+- **Structured documents** (tables, forms): Excellent performance with OCR + Vision
+- **Visual content** (photos, images): Direct vision processing
+- **Mixed documents**: Intelligent strategy selection based on question type
 
-### Next Milestone: Multi-Agent Architecture 🚧
-- Vision Specialist Agent (target: +5-10% on image/photo questions)
-- Answer Validator Agent (target: +1-2% overall)
-- Agent Orchestrator for intelligent routing
-- See [MULTI_AGENT_ROADMAP.md](MULTI_AGENT_ROADMAP.md) for details
-
-### Future Improvements
-- Fine-tuning for specific document types
-- Few-shot learning examples
-- Ensemble methods
-- Domain-specific adaptations
+Results are reproducible using the benchmark evaluation scripts in `evaluation/`.
 
 ---
 
@@ -325,15 +305,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [SP-DocVQA Dataset](https://huggingface.co/datasets/lmms-lab/DocVQA)
 - [ADK Documentation](https://github.com/google/adk)
 
-## Citation
+## Acknowledgments
 
-If you use this code, please cite:
-
-```bibtex
-@software{document_ai_agent,
-  title = {Document AI Agent: Hybrid OCR + Vision System},
-  author = {Your Name},
-  year = {2025},
-  url = {https://github.com/YOUR_USERNAME/document_ai_agent}
-}
-```
+This project uses:
+- Google Document AI for OCR and document understanding
+- Google Gemini Vision for visual document analysis
+- HuggingFace DocVQA dataset for evaluation
+- Google ADK (Agent Development Kit) for agent orchestration
