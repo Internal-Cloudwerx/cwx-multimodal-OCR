@@ -1,4 +1,5 @@
 # Python
+# Core tools and project configuration
 __pycache__/
 *.py[cod]
 *$py.class
