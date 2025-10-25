@@ -7,6 +7,16 @@
 - Google Document AI processor set up
 - Authenticated with Google Cloud (no manual key files needed!)
 
+## Multi-Agent System Overview
+
+This project implements a multi-agent document analysis system with:
+- **Vision Specialist Agent**: Handles images, photos, figures, diagrams
+- **OCR Specialist Agent**: Processes tables, forms, structured data
+- **Layout Specialist Agent**: Analyzes document structure and layout
+- **Orchestrator Agent**: Routes questions to optimal specialist
+- **Answer Validator Agent**: Provides confidence scoring
+- **ADK A2A Wrapper**: Enables agent-to-agent communication
+
 ## Step 1: Install Dependencies
 
 ```bash
@@ -70,27 +80,40 @@ DOCUMENT_AI_PROCESSOR_ID=your-actual-processor-id
 
 ```
 
-## Step 4: Verify Setup
+## Step 4: Test Multi-Agent System
 
-### Test Document AI Connection
+### 4.1 Test Individual Agents
 ```bash
-python3 -c "from tools.document_ocr import initialize_ocr_processor; initialize_ocr_processor(); print('✅ Document AI connected!')"
+# Test Vision Specialist
+python3 scripts/test_vision_specialist.py
+
+# Test OCR Specialist
+python3 scripts/test_ocr_specialist.py
+
+# Test Layout Specialist
+python3 scripts/test_layout_specialist.py
+
+# Test Orchestrator
+python3 scripts/test_orchestrator.py
 ```
 
-### Test Full System
+### 4.2 Test Multi-Agent Integration
 ```bash
-# Run on a small sample
-python3 scripts/test_docvqa_quick.py
+# Quick multi-agent test
+python3 evaluation/multi_agent_evaluator.py --num-samples 5
+
+# A2A communication demo
+python3 scripts/demo_adk_a2a.py
 ```
 
 ## Step 5: Run Evaluation (Optional)
 
 ```bash
 # Test on 10 samples
-python3 scripts/run_docvqa_benchmark.py --num-samples 10
+python3 evaluation/multi_agent_evaluator.py --num-samples 10
 
 # Full validation set (requires higher API quotas)
-python3 scripts/run_docvqa_benchmark.py --num-samples 5349
+python3 evaluation/multi_agent_evaluator.py --num-samples 5349
 ```
 
 ## Step 6: Deploy with ADK Web (Optional)

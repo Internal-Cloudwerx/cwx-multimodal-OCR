@@ -1,14 +1,15 @@
-# DocVQA Evaluation System
+# Multi-Agent DocVQA Evaluation System
 
-A production-ready evaluation system for benchmarking document processing agents on the SP-DocVQA dataset using HuggingFace datasets.
+A production-ready evaluation system for benchmarking multi-agent document processing systems on the SP-DocVQA dataset using HuggingFace datasets.
 
 ## Overview
 
 This evaluation system allows you to:
 - Automatically download SP-DocVQA dataset from HuggingFace
-- Evaluate your Document AI agent on standard benchmarks
+- Evaluate multi-agent document processing systems on standard benchmarks
 - Compute official ANLS (Average Normalized Levenshtein Similarity) scores
-- Generate detailed reports by question type
+- Generate detailed reports by question type and agent routing
+- Track agent-to-agent communication and confidence scores
 - Resume interrupted evaluations
 
 ## Installation
@@ -70,10 +71,10 @@ Loading SP-DocVQA validation split from Hugging Face...
 
 ### Step 2: Mini Test (10 samples)
 
-Test your agent on 10 samples to verify integration:
+Test your multi-agent system on 10 samples to verify integration:
 
 ```bash
-python scripts/run_docvqa_benchmark.py --num-samples 10
+python evaluation/multi_agent_evaluator.py --num-samples 10
 ```
 
 **Cost:** ~$0.10 (10 Document AI calls + Gemini tokens)
@@ -83,7 +84,7 @@ python scripts/run_docvqa_benchmark.py --num-samples 10
 Get meaningful benchmark results:
 
 ```bash
-python scripts/run_docvqa_benchmark.py --num-samples 100
+python evaluation/multi_agent_evaluator.py --num-samples 100
 ```
 
 **Cost:** ~$1.00
@@ -93,7 +94,7 @@ python scripts/run_docvqa_benchmark.py --num-samples 100
 Run on the complete validation set (~5,000 samples):
 
 ```bash
-python scripts/run_docvqa_benchmark.py --split validation
+python evaluation/multi_agent_evaluator.py --split validation
 ```
 
 **Cost:** ~$4-5 (one-time cost for full benchmark)

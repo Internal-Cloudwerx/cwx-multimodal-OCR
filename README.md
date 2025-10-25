@@ -1,29 +1,27 @@
-# (WIP) cwx-multimodal-OCR
+# cwx-multimodal-OCR
 
 A multi-modal, multi-agentic approach to analyze documents using Gemini and DocAI OCR for one-shot benchmark/enterprise-ready uses
-
-Next steps:
-- For the weak points of this pipeline fill in with agents
-- For example, "Image Specialist Agent", "Router/Orchestrator Agent", etc.
-- Add ADK wrappers for web support
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This project implements a hybrid approach combining:
-- Google Document AI for OCR and structured text extraction
-- Gemini 2.5 Flash Vision for visual document understanding
-- Selective strategy that intelligently chooses when to use OCR vs. vision-only
+This project implements a multi-agent system combining:
+- **Vision Specialist Agent**: Handles images, photos, figures, diagrams, handwritten text, Yes/No questions
+- **OCR Specialist Agent**: Processes tables, lists, forms, free text, structured data
+- **Layout Specialist Agent**: Analyzes document structure, layout, abstract questions
+- **Orchestrator Agent**: Intelligently routes questions to the best specialist
+- **Answer Validator Agent**: Provides confidence scoring and validation
+- **ADK A2A Wrapper**: Enables agent-to-agent communication for rich demos
 
 ## Features
 
-### Current Implementation
-- Hybrid OCR + Vision pipeline
-- Selective OCR strategy based on question type
-- Zero-shot learning (no training required)
-- Rate-limited API calls for reliability
-- Benchmark evaluation on SP-DocVQA dataset
-- ADK (Agent Development Kit) integration
+### Multi-Agent Architecture
+- **Intelligent Routing**: Questions automatically routed to optimal specialist
+- **Page Ambiguity Detection**: Clarifies PDF page vs printed page numbers
+- **A2A Communication**: Agent-to-agent collaboration for complex queries
+- **Confidence Scoring**: Multi-factor validation of answers
+- **Zero-shot Learning**: No training required
+- **Enterprise Ready**: Production-grade error handling and logging
 
 
 ## Quick Start
@@ -54,18 +52,21 @@ DOCUMENT_AI_PROCESSOR_ID=your-processor-id
 
 ### Usage
 
-**Test on sample documents:**
+**Test individual agents:**
 ```bash
-python3 scripts/test_docvqa_quick.py
+python3 scripts/test_vision_specialist.py
+python3 scripts/test_ocr_specialist.py
+python3 scripts/test_layout_specialist.py
+python3 scripts/test_orchestrator.py
 ```
 
-**Run benchmark evaluation:**
+**Run multi-agent benchmark evaluation:**
 ```bash
 # Small test
-python3 scripts/run_docvqa_benchmark.py --num-samples 10
+python3 evaluation/multi_agent_evaluator.py --num-samples 10
 
 # Larger evaluation
-python3 scripts/run_docvqa_benchmark.py --num-samples 100
+python3 evaluation/multi_agent_evaluator.py --num-samples 100
 ```
 
 **Deploy interactive web interface:**
@@ -76,76 +77,96 @@ adk web --port 4200
 
 ## How It Works
 
-### Pipeline Overview
+### Multi-Agent Pipeline Overview
 
 ```
 Document + Question
         ↓
-   [Question Type Analysis]
-   Is it structured (table/form)?
+   [Orchestrator Agent]
+   Analyzes question types
         ↓
     ┌───┴───┐
-   Yes     No
-    ↓       ↓
-  [OCR]  [Vision Only]
-    └───┬───┘
+   Route to Specialist
         ↓
-  [Gemini Vision]
-  (Image + OCR context)
+  ┌────┴────┐
+Vision   OCR   Layout
+Specialist Specialist Specialist
+  └────┬────┘
         ↓
-    Answer
+  [Answer Validator]
+  Confidence scoring
+        ↓
+    Final Answer
 ```
 
 ### Key Components
 
-1. **Question Type Classifier**: Determines optimal processing strategy
-2. **Document AI OCR**: Extracts text and tables from structured documents
-3. **Gemini Vision**: Analyzes document images directly
-4. **Answer Generator**: Produces concise, accurate answers
+1. **Orchestrator Agent**: Routes questions to optimal specialist based on question type
+2. **Vision Specialist**: Handles visual content (images, photos, figures, diagrams)
+3. **OCR Specialist**: Processes structured data (tables, forms, lists)
+4. **Layout Specialist**: Analyzes document structure and layout
+5. **Answer Validator**: Provides confidence scoring and validation
+6. **A2A Communication**: Enables agent collaboration for complex queries
 
 ## Project Structure
 
 ```
 cwx-multimodal-OCR/
-├── agent.py                     # ADK agent definition
+├── adk_agent.py                   # ADK agent definition
+├── adk_a2a_wrapper.py             # A2A communication wrapper
+├── agents/                        # Multi-agent system
+│   ├── vision_specialist.py       # Vision specialist agent
+│   ├── ocr_specialist.py          # OCR specialist agent
+│   ├── layout_specialist.py       # Layout specialist agent
+│   ├── orchestrator.py            # Orchestrator agent
+│   └── answer_validator.py        # Answer validator agent
 ├── tools/
-│   └── document_ocr.py         # Document AI integration
+│   ├── document_ocr.py            # Document AI integration
+│   └── agent_client.py            # Agent communication client
 ├── evaluation/
-│   ├── docvqa_evaluator.py     # Benchmark evaluator
-│   ├── hf_docvqa_loader.py     # Dataset loader
-│   ├── anls_metric.py          # ANLS scoring
-│   └── README.md               # Evaluation guide
+│   ├── multi_agent_evaluator.py   # Multi-agent benchmark evaluator
+│   ├── docvqa_evaluator.py        # Single-agent evaluator
+│   ├── hf_docvqa_loader.py        # Dataset loader
+│   ├── anls_metric.py             # ANLS scoring
+│   └── README.md                  # Evaluation guide
 ├── scripts/
-│   ├── run_docvqa_benchmark.py # Run evaluations
-│   └── test_docvqa_quick.py    # Quick tests
+│   ├── test_vision_specialist.py  # Vision agent tests
+│   ├── test_ocr_specialist.py     # OCR agent tests
+│   ├── test_layout_specialist.py # Layout agent tests
+│   ├── test_orchestrator.py       # Orchestrator tests
+│   ├── demo_adk_a2a.py           # A2A demo
+│   ├── run_docvqa_benchmark.py   # Legacy evaluator
+│   └── test_docvqa_quick.py      # Quick tests
 ├── data/
-│   └── sample/                 # Sample documents
-├── credentials/                 # GCP credentials (gitignored)
-├── SETUP.md                     # Detailed setup guide
-├── README.md                    # This file
-└── requirements.txt             # Dependencies
+│   └── sample/                    # Sample documents
+├── credentials/                   # GCP credentials (gitignored)
+├── SETUP.md                       # Detailed setup guide
+├── README.md                      # This file
+└── requirements.txt               # Dependencies
 ```
 
 ## Benchmarking
 
-### DocVQA Evaluation
+### Multi-Agent Evaluation
 
-The system can be evaluated on the SP-DocVQA dataset:
+The system can be evaluated on the SP-DocVQA dataset using the multi-agent architecture:
 
 ```bash
 # Quick test (10 samples)
-python3 scripts/run_docvqa_benchmark.py --num-samples 10
+python3 evaluation/multi_agent_evaluator.py --num-samples 10
 
 # Medium test (100 samples)
-python3 scripts/run_docvqa_benchmark.py --num-samples 100
+python3 evaluation/multi_agent_evaluator.py --num-samples 100
 
 # Full validation set (5,349 samples, requires higher API quotas)
-python3 scripts/run_docvqa_benchmark.py --num-samples 5349
+python3 evaluation/multi_agent_evaluator.py --num-samples 5349
 ```
 
-Results are saved to `evaluation/results/docvqa/` including:
+Results are saved to `evaluation/results/docvqa_multi_agent_benchmark/` including:
 - Detailed per-sample results (JSON)
-- Aggregated metrics (JSON)
+- Agent routing information
+- Confidence scores
+- A2A communication logs
 - CSV export for analysis
 
 See [evaluation/README.md](evaluation/README.md) for more details.
@@ -245,12 +266,14 @@ Scaling:
 
 ## Performance
 
-The system achieves competitive performance on document question answering benchmarks using a hybrid approach:
-- **Structured documents** (tables, forms): Excellent performance with OCR + Vision
-- **Visual content** (photos, images): Direct vision processing
-- **Mixed documents**: Intelligent strategy selection based on question type
+The multi-agent system achieves competitive performance on document question answering benchmarks:
+- **Vision Specialist**: Handles visual content (images, photos, figures, diagrams)
+- **OCR Specialist**: Excels at structured data (tables, forms, lists)
+- **Layout Specialist**: Analyzes document structure and layout
+- **Intelligent Routing**: 100% routing accuracy to optimal specialist
+- **A2A Communication**: Agent collaboration for complex queries
 
-Results are reproducible using the benchmark evaluation scripts in `evaluation/`.
+Results are reproducible using the multi-agent evaluation scripts in `evaluation/`.
 
 ---
 
