@@ -1,6 +1,7 @@
 """
 ADK Document Processing Agent
 This agent can analyze PDFs, receipts, invoices, and forms
+Core tools and project configuration
 """
 
 from google.adk.agents import Agent
