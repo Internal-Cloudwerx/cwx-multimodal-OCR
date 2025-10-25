@@ -189,80 +189,51 @@ MODEL=gemini-2.5-flash  # Recommended for vision tasks
 MODEL=gemini-1.5-pro    # Alternative
 ```
 
-### Rate Limiting
+### Multi-Agent Routing
 
-To avoid API rate limits during large evaluations:
-
-```python
-# In evaluation/docvqa_evaluator.py
-self.min_request_interval = 2.0  # Seconds between requests
-```
-
-### Selective OCR Strategy
-
-Configure which question types use OCR in `evaluation/docvqa_evaluator.py`:
-
-```python
-ocr_beneficial_types = {
-    'table/list',      # Tables
-    'figure/diagram',  # Charts
-    'layout',          # Layout analysis
-    'form',            # Forms
-}
-```
+The system automatically routes questions to the optimal specialist:
+- **Vision Specialist**: Images, photos, figures, diagrams, handwritten text, Yes/No questions
+- **OCR Specialist**: Tables, lists, forms, free text, structured data
+- **Layout Specialist**: Document structure, layout analysis, abstract questions
 
 ## Development
 
-### Adding New Tools
+### Adding New Specialist Agents
 
-Create tools in `tools/` directory:
+To add a new specialist agent to the multi-agent system:
 
-```python
-from google.adk.agents import agent_tool
-
-@agent_tool(description="Your tool description")
-def your_tool(param: str) -> str:
-    """Tool implementation"""
-    return result
-```
-
-Register in `agent.py`:
-
-```python
-from tools.your_module import your_tool
-
-root_agent = Agent(
-    name="document_processing_agent",
-    model=os.getenv('MODEL', 'gemini-2.5-flash'),
-    tools=[
-        process_document_with_ocr,
-        search_document,
-        your_tool  # Add here
-    ]
-)
-```
+1. Create a new agent file in `agents/` directory
+2. Implement the required methods: `analyze_*_question()`, `is_suitable_for_question()`, `get_agent_info()`
+3. Add the agent to `agents/__init__.py`
+4. Update the orchestrator routing logic in `agents/orchestrator.py`
+5. Add test scripts in `scripts/` directory
 
 ### Running Tests
 
 ```bash
-# Quick functionality test
-python3 scripts/test_docvqa_quick.py
+# Test individual agents
+python3 scripts/test_vision_specialist.py
+python3 scripts/test_ocr_specialist.py
+python3 scripts/test_layout_specialist.py
+python3 scripts/test_orchestrator.py
 
-# Small benchmark
-python3 scripts/run_docvqa_benchmark.py --num-samples 10
+# Test multi-agent system
+python3 evaluation/multi_agent_evaluator.py --num-samples 10
 ```
 
 ## Cost Estimates
 
-Approximate costs per document:
+Approximate costs per document with multi-agent system:
 - Document AI OCR: ~$0.0015
-- Gemini 2.5 Flash: ~$0.0001
-- **Total: ~$0.0016 per document**
+- Gemini 2.5 Flash (per agent): ~$0.0001
+- **Total per document: ~$0.0016-0.0020** (depending on routing)
 
 Scaling:
-- 100 documents: ~$0.16
-- 1,000 documents: ~$1.60
-- 10,000 documents: ~$16.00
+- 100 documents: ~$0.16-0.20
+- 1,000 documents: ~$1.60-2.00
+- 10,000 documents: ~$16.00-20.00
+
+*Note: Costs are lower in sandbox mode with no rate limiting*
 
 ## Performance
 
@@ -291,23 +262,12 @@ Results are reproducible using the multi-agent evaluation scripts in `evaluation
 - Ensure processor is in same project/location
 
 **"429 Rate Limit" Error**
-- Increase `min_request_interval` in evaluator
 - Request quota increase via GCP console
 - See [evaluation/README.md](evaluation/README.md) for details
 
 **Import Errors**
 - Reinstall dependencies: `pip install -r requirements.txt`
 - Check Python version: `python3 --version` (requires 3.8+)
-
-## Contributing
-
-Contributions are welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/YourFeature`)
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
 
 ## Dependencies
 
@@ -319,6 +279,7 @@ Main dependencies (see `requirements.txt` for complete list):
 - `python-Levenshtein` - ANLS metric calculation
 - `tqdm` - Progress bars
 - `pandas` - Result analysis
+- `PyMuPDF` - PDF processing
 
 ## License
 
