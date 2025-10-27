@@ -151,13 +151,18 @@ class OrchestratorAgent:
         question_lower = question.lower()
         detected_types = []
         
+        # Check Yes/No questions FIRST (before other patterns)
+        yes_no_pattern = r'^(is there|are there|does (this|it|that)|do you|can you|will you|was there|were there|is this|are you|is it)(\s|$)'
+        if re.search(yes_no_pattern, question_lower):
+            detected_types.append('Yes/No')
+            return detected_types  # Yes/No is very specific, return early
+        
         # Vision/Image indicators
         vision_keywords = [
             r'\b(what|describe|identify|show|see).*\b(image|photo|picture|diagram|chart|graph|figure|illustration)',
             r'\b(caption|title|label).*\b(image|figure|diagram)',
             r'(how many|count).*\b(image|figure|photo)',
             r'(handwritten|hand writing)',
-            r'\b(yes|no)\?*$',  # Yes/No questions
         ]
         
         for pattern in vision_keywords:
