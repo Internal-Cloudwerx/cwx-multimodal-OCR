@@ -410,13 +410,25 @@ class MultiAgentDocVQAEvaluator:
 
 
 if __name__ == "__main__":
+    import argparse
+    
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='Multi-Agent DocVQA Evaluator')
+    parser.add_argument('--num-samples', type=int, default=5, help='Number of samples to evaluate')
+    parser.add_argument('--start-idx', type=int, default=0, help='Starting index for evaluation')
+    parser.add_argument('--output-dir', type=str, default='evaluation/results/docvqa_multi_agent_benchmark', help='Output directory for results')
+    parser.add_argument('--no-resume', action='store_true', help='Start fresh evaluation (don\'t resume)')
+    args = parser.parse_args()
+    
     # Test the multi-agent evaluator
     evaluator = MultiAgentDocVQAEvaluator()
     
-    # Run evaluation on a small sample
+    # Run evaluation with command line arguments
     metrics = evaluator.evaluate(
-        num_samples=5,
-        output_dir="evaluation/results/docvqa_multi_agent_test"
+        num_samples=args.num_samples,
+        start_idx=args.start_idx,
+        output_dir=args.output_dir,
+        resume=not args.no_resume
     )
     
     print("\nMulti-Agent Evaluation Test Complete!")
