@@ -395,14 +395,19 @@ Answer:"""
         }
 
 
-def create_ocr_specialist() -> OCRSpecialistAgent:
+def create_ocr_specialist(model_name: Optional[str] = None) -> OCRSpecialistAgent:
     """
     Factory function to create an OCR Specialist Agent
+    
+    Args:
+        model_name: Optional model name (uses default from .env if None)
     
     Returns:
         Initialized OCRSpecialistAgent instance
     """
-    return OCRSpecialistAgent()
+    if model_name is None:
+        model_name = os.getenv('MODEL', 'gemini-2.5-flash')
+    return OCRSpecialistAgent(model_name)
 
 
 if __name__ == "__main__":

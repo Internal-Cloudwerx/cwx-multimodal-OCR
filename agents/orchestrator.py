@@ -34,14 +34,21 @@ class OrchestratorAgent:
     - Layout Specialist: layout, others (fallback)
     """
     
-    def __init__(self):
+    def __init__(self, model_name: Optional[str] = None):
         """
         Initialize Orchestrator Agent with all specialist agents
+        
+        Args:
+            model_name: Optional model name for all agents (uses default from .env if None)
         """
-        # Initialize specialist agents
-        self.vision_specialist = create_vision_specialist()
-        self.ocr_specialist = create_ocr_specialist()
-        self.layout_specialist = create_layout_specialist()
+        # Use model from environment or parameter
+        if model_name is None:
+            model_name = os.getenv('MODEL', 'gemini-2.5-flash')
+        
+        # Initialize specialist agents with specified model
+        self.vision_specialist = create_vision_specialist(model_name)
+        self.ocr_specialist = create_ocr_specialist(model_name)
+        self.layout_specialist = create_layout_specialist(model_name)
         
         # Agent registry for easy access
         self.agents = {
@@ -326,14 +333,17 @@ class OrchestratorAgent:
         }
 
 
-def create_orchestrator() -> OrchestratorAgent:
+def create_orchestrator(model_name: Optional[str] = None) -> OrchestratorAgent:
     """
     Create an Orchestrator Agent instance
+    
+    Args:
+        model_name: Optional model name for all agents (uses default from .env if None)
     
     Returns:
         OrchestratorAgent instance
     """
-    return OrchestratorAgent()
+    return OrchestratorAgent(model_name)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 """
 Vision Specialist Agent
-Specialized agent for handling image/photo questions using Gemini Pro Vision
+Specialized agent for handling image/photo questions using Gemini Vision models
 """
 
 import os
@@ -26,7 +26,7 @@ class VisionSpecialistAgent:
     Vision Specialist Agent for image/photo questions
     
     This agent is optimized for visual document understanding and question answering
-    using Gemini Pro Vision. It focuses on image-based questions that require
+    using Gemini Vision models. It focuses on image-based questions that require
     visual analysis rather than structured text extraction.
     """
     
@@ -62,7 +62,7 @@ class VisionSpecialistAgent:
         question_types: Optional[List[str]] = None
     ) -> Dict:
         """
-        Analyze an image-based question using Gemini Pro Vision
+        Analyze an image-based question using Gemini Vision
         
         Args:
             image_path: Path to the document image
@@ -268,21 +268,26 @@ Answer:"""
         """
         return {
             "name": "Vision Specialist Agent",
-            "description": "Specialized in image/photo questions using Gemini Pro Vision",
+            "description": "Specialized in image/photo questions using Gemini Vision models",
             "model": self.model_name,
             "specialties": ["Image/Photo", "handwritten", "Yes/No", "figure/diagram"],
             "version": "1.0.0"
         }
 
 
-def create_vision_specialist() -> VisionSpecialistAgent:
+def create_vision_specialist(model_name: Optional[str] = None) -> VisionSpecialistAgent:
     """
     Factory function to create a Vision Specialist Agent
+    
+    Args:
+        model_name: Optional model name (uses default from .env if None)
     
     Returns:
         Initialized VisionSpecialistAgent instance
     """
-    return VisionSpecialistAgent()
+    if model_name is None:
+        model_name = os.getenv('MODEL', 'gemini-2.5-flash')
+    return VisionSpecialistAgent(model_name)
 
 
 if __name__ == "__main__":

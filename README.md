@@ -296,6 +296,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 This project uses:
 - Google Document AI for OCR and document understanding
-- Google Gemini Vision for visual document analysis
+- Google Gemini for multimodal document analysis
 - HuggingFace DocVQA dataset for evaluation
 - Google ADK (Agent Development Kit) for agent orchestration

@@ -30,7 +30,7 @@ class LayoutSpecialistAgent:
     
     Uses hybrid approach:
     - Document AI OCR for text extraction and structure
-    - Gemini Vision for spatial understanding and layout analysis
+    - Gemini models (2.5 Flash/Pro) with multimodal capabilities
     - Specialized prompting for layout reasoning
     """
     
@@ -358,11 +358,16 @@ RESPONSE: Answer the question by combining visual layout analysis with OCR text 
         }
 
 
-def create_layout_specialist() -> LayoutSpecialistAgent:
+def create_layout_specialist(model_name: Optional[str] = None) -> LayoutSpecialistAgent:
     """
     Create a Layout Specialist Agent instance
+    
+    Args:
+        model_name: Optional model name (uses default from .env if None)
     
     Returns:
         LayoutSpecialistAgent instance
     """
-    return LayoutSpecialistAgent()
+    if model_name is None:
+        model_name = os.getenv('MODEL', 'gemini-2.5-flash')
+    return LayoutSpecialistAgent(model_name)
