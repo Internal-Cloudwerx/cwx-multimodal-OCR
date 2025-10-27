@@ -8,6 +8,7 @@ and implements the optimized multi-agent strategy.
 
 import os
 import time
+import re
 import logging
 import warnings
 from typing import Dict, Optional, List, Tuple
@@ -91,7 +92,7 @@ class OrchestratorAgent:
         
         try:
             # Step 1: Determine best agent for this question
-            selected_agent, routing_reason = self._select_agent(question_types)
+            selected_agent, routing_reason = self._select_agent(question_types, question)
             
             # Step 2: Route to selected agent
             logger.info(f"Routing to {selected_agent} agent: {routing_reason}")
@@ -137,18 +138,85 @@ class OrchestratorAgent:
                 "error": str(e)
             }
     
-    def _select_agent(self, question_types: Optional[List[str]]) -> Tuple[str, str]:
+    def _detect_question_type(self, question: str) -> List[str]:
         """
-        Select the best agent for the given question types
+        Intelligently detect question type from question text
         
         Args:
-            question_types: List of question types
+            question: The question text
+            
+        Returns:
+            List of detected question types
+        """
+        question_lower = question.lower()
+        detected_types = []
+        
+        # Vision/Image indicators
+        vision_keywords = [
+            r'\b(what|describe|identify|show|see).*\b(image|photo|picture|diagram|chart|graph|figure|illustration)',
+            r'\b(caption|title|label).*\b(image|figure|diagram)',
+            r'(how many|count).*\b(image|figure|photo)',
+            r'(handwritten|hand writing)',
+            r'\b(yes|no)\?*$',  # Yes/No questions
+        ]
+        
+        for pattern in vision_keywords:
+            if re.search(pattern, question_lower):
+                detected_types.append('Image/Photo')
+                break
+        
+        # Layout indicators  
+        layout_keywords = [
+            r'\b(structure|layout|organization|arrangement|organization)',
+            r'\b(heading|title|caption|section)',
+            r'(how is|what is the structure|what is the layout)',
+            r'(where is|which section)',
+        ]
+        
+        for pattern in layout_keywords:
+            if re.search(pattern, question_lower):
+                detected_types.append('layout')
+                break
+        
+        # OCR indicators (tables, forms, structured data)
+        ocr_keywords = [
+            r'\b(table|list|row|column|cell)',
+            r'\b(form|field|signature|date|name|address)',
+            r'(what is the total|how much|cost|price|amount)',
+            r'(extract|extraction)',
+        ]
+        
+        for pattern in ocr_keywords:
+            if re.search(pattern, question_lower):
+                detected_types.append('table/list')
+                break
+        
+        # Default to OCR if nothing detected
+        if not detected_types:
+            detected_types = ['others']
+        
+        return list(set(detected_types))  # Remove duplicates
+    
+    def _select_agent(self, question_types: Optional[List[str]], question: str = "") -> Tuple[str, str]:
+        """
+        Select the best agent for the given question types
+        Auto-detects question type if not provided
+        
+        Args:
+            question_types: List of question types (optional)
+            question: Question text for auto-detection
             
         Returns:
             Tuple of (agent_name, routing_reason)
         """
-        if not question_types:
-            return 'ocr', "No question types specified, defaulting to OCR specialist"
+        # If no question types provided, try to detect them
+        if not question_types or question_types == []:
+            if question:
+                detected_types = self._detect_question_type(question)
+                logger.info(f"Auto-detected question types: {detected_types}")
+                question_types = detected_types
+            else:
+                return 'ocr', "No question types specified and no question provided, defaulting to OCR specialist"
         
         # Priority-based routing: Check question types in order of performance impact
         # This ensures we route to the best agent even when multiple types are present
