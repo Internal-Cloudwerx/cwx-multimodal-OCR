@@ -92,12 +92,20 @@ class LayoutSpecialistAgent:
             # Create specialized layout prompt
             prompt = self._create_layout_prompt(question, question_types, ocr_data)
             
+            # Phase 1.5: Optimize temperature per question type
+            temperature = 0.1  # Default for layout analysis
+            if question_types:
+                if 'layout' in question_types:
+                    temperature = 0.1  # Balanced for structural analysis
+                elif 'others' in question_types:
+                    temperature = 0.15  # Allow more flexibility for abstract questions
+            
             # Generate response
             start_time = time.time()
             response = self.model.generate_content(
                 [prompt, image_part],
                 generation_config={
-                    "temperature": 0.1,  # Low temperature for precise layout analysis
+                    "temperature": temperature,
                     "max_output_tokens": 400,  # Higher limit for complex layout descriptions
                     "top_p": 0.8,
                     "top_k": 40

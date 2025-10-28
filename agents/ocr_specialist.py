@@ -93,12 +93,20 @@ class OCRSpecialistAgent:
             # Step 3: Create specialized prompt for table/form questions
             prompt = self._create_ocr_prompt(question, question_types, ocr_data)
             
+            # Phase 1.5: Optimize temperature per question type
+            temperature = 0.05  # Default for precise extraction
+            if question_types:
+                if 'table/list' in question_types or 'form' in question_types:
+                    temperature = 0.05  # Need precision for structured data
+                elif 'free_text' in question_types or 'others' in question_types:
+                    temperature = 0.1  # Allow some flexibility for open-ended questions
+            
             # Step 4: Generate response
             start_time = time.time()
             response = self.model.generate_content(
                 [prompt, image_part],
                 generation_config={
-                    "temperature": 0.05,  # Very low temperature for precise answers
+                    "temperature": temperature,
                     "max_output_tokens": 400,  # Increased for complete answers
                     "top_p": 0.8,
                     "top_k": 40
@@ -230,6 +238,8 @@ class OCRSpecialistAgent:
         """
         # Determine question context
         context_hints = []
+        is_numerical_question = False
+        
         if question_types:
             if 'table/list' in question_types:
                 context_hints.append("This is a table/list question - focus on structured data")
@@ -237,8 +247,26 @@ class OCRSpecialistAgent:
                 context_hints.append("This is a form question - look for form fields and values")
             if 'figure/diagram' in question_types:
                 context_hints.append("This may contain charts/diagrams - look for numerical data")
+                is_numerical_question = True
+        
+        # Detect numerical questions
+        numerical_indicators = ['how many', 'how much', 'what is the', 'what value', 'actual value', 'number', 'count', 'total']
+        if any(indicator in question.lower() for indicator in numerical_indicators):
+            is_numerical_question = True
         
         context_text = "\n".join(context_hints) if context_hints else ""
+        
+        # Phase 1.3: Enhanced numerical extraction instructions
+        numerical_instructions = ""
+        if is_numerical_question:
+            numerical_instructions = """
+CRITICAL NUMERICAL ACCURACY INSTRUCTIONS:
+- For ANY question involving numbers, extract the EXACT value from OCR text
+- Pay special attention to decimal places and all digits
+- Verify numbers character by character against OCR text
+- For decimals, preserve all digits after the decimal point
+- Cross-check numbers in both OCR text and image for accuracy
+"""
         
         # Build OCR context
         ocr_context = ""
@@ -274,6 +302,8 @@ Question: {question}
 
 {ocr_context}
 
+{numerical_instructions}
+
 Instructions:
 - Use BOTH the document image AND the OCR text above
 - The OCR text provides precise text extraction, but the image shows layout and visual context
@@ -282,8 +312,9 @@ Instructions:
 - For numerical questions, extract exact numbers from the OCR text
 - Provide ONLY the direct answer, nothing else
 - Be precise and accurate with numbers, dates, and names
-- If the answer is a number, provide just that value
+- If the answer is a number, provide JUST that number with proper decimal precision
 - If multiple values are found, provide the most relevant one
+- Double-check numerical values for accuracy
 
 Answer:"""
         

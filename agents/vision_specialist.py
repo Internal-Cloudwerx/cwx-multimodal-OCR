@@ -105,12 +105,20 @@ class VisionSpecialistAgent:
             # Create specialized prompt for image questions
             prompt = self._create_vision_prompt(question, question_types)
             
+            # Phase 1.5: Optimize temperature per question type
+            temperature = 0.1  # Default for balanced questions
+            if question_types:
+                if 'Yes/No' in question_types or 'handwritten' in question_types:
+                    temperature = 0.05  # Need precision for binary answers
+                elif 'Image/Photo' in question_types or 'figure/diagram' in question_types:
+                    temperature = 0.1  # Balanced for visual content
+            
             # Generate response
             start_time = time.time()
             response = self.model.generate_content(
                 [prompt, image_part],
                 generation_config={
-                    "temperature": 0.1,  # Low temperature for consistent answers
+                    "temperature": temperature,
                     "max_output_tokens": 200,  # Increased for better answers
                     "top_p": 0.8,
                     "top_k": 40
@@ -172,6 +180,9 @@ class VisionSpecialistAgent:
         """
         # Determine question context
         context_hints = []
+        is_numerical_question = False
+        is_figure_diagram = False
+        
         if question_types:
             if 'Image/Photo' in question_types:
                 context_hints.append("This is an image/photo question - focus on visual elements")
@@ -179,14 +190,37 @@ class VisionSpecialistAgent:
                 context_hints.append("This may contain handwriting - look carefully at text")
             if 'Yes/No' in question_types:
                 context_hints.append("This is a yes/no question - provide clear yes or no answer")
+            if 'figure/diagram' in question_types:
+                context_hints.append("This is a figure/diagram question - examine visual data carefully")
+                is_figure_diagram = True
+                is_numerical_question = True  # Charts/diagrams often have numerical data
+        
+        # Detect numerical questions
+        numerical_indicators = ['how many', 'how much', 'what is the', 'what value', 'actual value', 'number', 'count', 'total']
+        if any(indicator in question.lower() for indicator in numerical_indicators):
+            is_numerical_question = True
         
         context_text = "\n".join(context_hints) if context_hints else ""
+        
+        # Phase 1.3: Enhanced numerical extraction instructions
+        numerical_instructions = ""
+        if is_numerical_question or is_figure_diagram:
+            numerical_instructions = """
+CRITICAL NUMERICAL ACCURACY INSTRUCTIONS:
+- For ANY question involving numbers, double-check the exact value
+- Pay special attention to decimal places and digits
+- Verify numbers character by character - don't guess
+- If reading from charts/diagrams, trace axes carefully
+- For decimals, count every digit after the decimal point
+- If unsure about a digit, re-examine the image carefully
+"""
         
         prompt = f"""You are a Vision Specialist Agent specialized in analyzing document images to answer questions.
 
 Question: {question}
 
 {context_text}
+{numerical_instructions}
 
 Instructions:
 - Analyze the document image carefully
@@ -195,8 +229,10 @@ Instructions:
 - For handwritten content, examine the handwriting carefully
 - Provide ONLY the direct answer - no explanations or context
 - Be precise and concise
-- If the answer is a number, date, or name, provide just that value
-- If unsure, provide your best estimate with appropriate confidence
+- If the answer is a number, provide JUST that number with proper decimal precision
+- If the answer is a date, provide just that date
+- If the answer is a name, provide just that name
+- Double-check numerical values for accuracy
 
 Answer:"""
         
